@@ -1,0 +1,33 @@
+# Objetivo del script: este script identifica los pacientes que son candidatos a recibir el tratamiento
+# con el nuevo farmaco frente a la proteina BRAF mutada (V600). Para ello procesa los archivos .fasta del 
+# directorio, que contienen las secuencias del gen BRAD de los pacientes de los distintos centros, y 
+# devuelve un unico archivo con los pacientes que presentan la mutacion.
+#
+# Busqueda de la mutacion: el comando grep recorre todos los archivos .fasta (*.fasta) buscando la 
+# secuencia de nucleotidos correspondiente a la mutacion V600E (CTACAGAGAAATC). La opcion -i hace que 
+# la busqueda no distinga entre mayusculas y minusculas, de modo que se detectan tambien los pacientes 
+# cuya secuencia esta escrita en minusculas, y la opcion-h evita que grep escriba delante de cada linea
+# el nombre del archivo del que procede, para mantener el formato FASTA.
+#
+# Seleccion de los pacientes: en un archivo FASTA cada paciente ocupa dos# lineas: la cabecera
+# (que empieza por ">") y la secuencia. Como la mutacion solo se encuentra en la linea de la secuencia,
+# la opcion -B 1 hace que grep muestre tambien la linea anterior a cada coincidencia, es decir, la
+# cabecera del paciente. Al usar -B, grep separa los resultados con lineas "--", asi que se filtran con
+# un segundo grep (grep -v '^--$') y el resultado se guarda con ">" en un unico archivo nuevo, candidatos.fasta.
+#
+# Recuento: por ultimo, el script muestra por pantalla un mensaje y cuenta cuantas lineas del archivo
+#generado empiezan por ">" (grep -c '^>'), es decir, cuantas cabeceras hay y, por tanto, cuantos pacientes
+#candidatos se han encontrado.
+
+
+
+
+#!/bin/bash
+
+# Buscar pacientes con la mutación BRAF V600E
+grep -hi -B 1 "CTACAGAGAAATC" *.fasta | grep -v '^--$' > candidatos.fasta
+
+# Contar los pacientes encontrados
+echo "Pacientes candidatos:"
+grep -c '^>' candidatos.fasta
+
